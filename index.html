@@ -1,0 +1,4302 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bảng Báo Giá Mỹ Phẩm</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --vinako-primary: #1a5f7a;
+        --vjk-primary: #4a205b;
+        --background: #f8f9fa;
+        --text: #2e3440;
+      }
+
+      .tab-active {
+        border-bottom: 3px solid currentColor;
+      }
+
+      .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .company-section {
+        display: none;
+      }
+
+      .company-section.active {
+        display: block;
+      }
+
+      .mobile-menu {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .desktop-download {
+          display: none;
+        }
+
+        .mobile-menu-button {
+          display: block;
+        }
+
+        .mobile-menu.active {
+          display: block;
+        }
+      }
+
+      .header-spacer {
+        height: 80px;
+      }
+
+      @media (max-width: 768px) {
+        .header-spacer {
+          height: 100px;
+        }
+      }
+
+      .search-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--primary);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Company Selector Tabs -->
+    <div class="fixed top-0 w-full bg-white shadow-md z-50">
+      <div class="container mx-auto">
+        <div class="flex">
+          <button
+            onclick="switchCompany('vjk')"
+            id="vjk-tab"
+            class="flex-1 py-4 px-6 text-lg font-bold text-purple-800 hover:bg-purple-50 transition-colors tab-active"
+          >
+            VJK ADV DERMA
+          </button>
+          <button
+            onclick="switchCompany('vinako')"
+            id="vinako-tab"
+            class="flex-1 py-4 px-6 text-lg font-bold text-blue-800 hover:bg-blue-50 transition-colors"
+          >
+            VINAKO
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacer for fixed header -->
+    <div class="h-16"></div>
+
+    <!-- VINAKO Section -->
+    <section id="vinako-section" class="company-section">
+      <!-- Company Info -->
+      <div class="container mx-auto px-4 my-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="grid md:grid-cols-3 gap-4 text-center">
+            <div>
+              <h3 class="font-semibold text-gray-700">Văn phòng miền Bắc</h3>
+              <p class="text-gray-600">
+                Tòa nhà Licogi 13, 164 Khuất Duy Tiến, Thanh Xuân, Hà Nội
+              </p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-700">Văn phòng miền Nam</h3>
+              <p class="text-gray-600">
+                259/1B – 1C Nguyễn Tri Phương, P.5, Q.10, TP. HCM
+              </p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-700">Liên hệ</h3>
+              <p class="text-gray-600">HOTLINE: 1800.2051</p>
+              <p class="text-gray-600">Email: support@vinako.vn</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div
+            class="flex flex-col md:flex-row justify-between items-center gap-4"
+          >
+            <div class="w-full md:w-1/3">
+              <input
+                type="text"
+                id="vinako-search"
+                placeholder="Tìm kiếm sản phẩm..."
+                class="w-full px-4 py-2 border rounded-lg search-input"
+              />
+            </div>
+            <div class="w-full md:w-1/3">
+              <select
+                id="vinako-product-select"
+                class="w-full px-4 py-2 border rounded-lg appearance-none"
+              >
+                <option value="all">Tất cả sản phẩm</option>
+                <option value="1">GSC EXO NMN</option>
+                <option value="2">Serum Kim Cương Dr. Leemee</option>
+                <option value="3">Tế Bào Gốc Ma Thuật Dr. Leemee</option>
+                <option value="4">Tế Bào Gốc Mụn GSC TR</option>
+                <option value="5">Tế Bào Gốc Chống Lão Hoá GSC</option>
+                <option value="6">Tế Bào Gốc Trắng Sáng GSC TR</option>
+                <option value="7">Kem Dưỡng Phục Hồi Thải Độc Da GSC</option>
+                <option value="8">Kem Ức Chế Nám GSC</option>
+                <option value="9">Mặt Nạ Tái Tạo Và Phục Hồi GSC</option>
+                <option value="10">Tế Bào Gốc Sẹo Plus+</option>
+                <option value="11">Tinh Chất Ngừa Lão Hóa Da</option>
+                <option value="12">Kem Ngừa Sẹo Và Trẻ Hóa Da</option>
+                <option value="13">Tinh Chất Cấp Nước GSC</option>
+                <option value="14">Tinh Chất Trắng Sáng GSC</option>
+                <option value="15">Tinh Chất Phục Hồi GSC</option>
+                <option value="16">Kem Dưỡng Trắng Speed GSC</option>
+                <option value="17">Tắm Trắng - Tẩy Da Chết Body GSC</option>
+                <option value="18">Kem Ủ Trắng Body GSC</option>
+                <option value="19">Kem Dưỡng Trắng Body GSC</option>
+                <option value="20">Kem Ủ Trắng Da Mặt GSC</option>
+                <option value="21">Dầu Tẩy Trang GSC</option>
+                <option value="22">Sữa Rửa Mặt (Gel) GSC</option>
+                <option value="23">Sữa Rửa Mặt (Gel) GSC 5.5pH</option>
+                <option value="24">Sữa Rửa Mặt (Bột) GSC</option>
+                <option value="25">Kem Tẩy Da Chết GSC</option>
+                <option value="26">Toner Cân Bằng Da GSC</option>
+                <option value="27">Kem Massage Da Tổng GSC</option>
+                <option value="28">Mặt Nạ Cá Tầm GSC</option>
+                <option value="29">Kem Chống Nắng Vật Lý GSC</option>
+                <option value="30">Kem Mắt GSC</option>
+                <option value="31">Bakanasan Beauty Kollagen</option>
+                <option value="32">Combo Giảm Béo Spa Dr. Leemee</option>
+                <option value="33">GSC Acne Clear Ampoule</option>
+                <option value="34">GSC Acne Clear Cream</option>
+                <option value="35">GSC Advanced Repair Serum</option>
+                <option value="36">GSC GIGA White Serum</option>
+                <option value="37">GSC Triple BB Cream</option>
+                <option value="38">GSC MEN'S TONER</option>
+                <option value="39">GSC MEN'S PEELING</option>
+              </select>
+            </div>
+            <div class="w-full md:w-1/3">
+              <select
+                id="vinako-price-filter"
+                class="w-full px-4 py-2 border rounded-lg appearance-none"
+              >
+                <option value="all">Tất cả giá</option>
+                <option value="0-500000">Dưới 500.000₫</option>
+                <option value="500000-1000000">500.000₫ - 1.000.000₫</option>
+                <option value="1000000+">Trên 1.000.000₫</option>
+              </select>
+            </div>
+            <div class="w-full md:w-auto">
+              <button
+                onclick="downloadExcel('vinako')"
+                class="w-full md:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Tải Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="container mx-auto px-4 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Product 1: GSC EXO NMN -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="1"
+            data-price="9800000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="GSC EXO NMN"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  9,800,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">GSC EXO NMN</h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất tế bào gốc cao cấp
+              </p>
+              <p class="text-sm text-gray-600 mb-4">
+                Hộp (5 Cốp) (0.025g x 5 Lo | 5ml x 5 Lo)
+              </p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - Adenosine, NMN, Panthenol
+                  </li>
+                  <li class="text-gray-600 text-sm">- Ceramide, Glutathione</li>
+                  <li class="text-gray-600 text-sm">
+                    - EGF, FGF, Sodium DNA, Vitamin C
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da mỏng yếu, mất cấu trúc
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Nâng cơ, trẻ hóa, thu nhỏ lỗ chân lông
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng sinh collagen, chống lão hóa
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cấp ẩm, căng bóng, sáng đều màu da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2: Serum Kim Cương -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="2"
+            data-price="1700000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Serum Kim Cương"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,700,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Serum Kim Cương Dr. Leemee
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất dưỡng trắng kim cương
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp 5 x 10 gói</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất rễ cây Hổ Tiêu
+                  </li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất rau má</li>
+                  <li class="text-gray-600 text-sm">
+                    - Beta Glucan, Sodium Hyaluronate
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giảm sạm da, trị nám, tàn nhang, làm trắng sáng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Nâng cơ, trẻ hóa và chống lão hóa da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi cấu trúc da bị hư tổn
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3: Tế Bào Gốc Ma Thuật -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="3"
+            data-price="6800000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tế Bào Gốc Ma Thuật"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  6,800,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tế Bào Gốc Ma Thuật Dr. Leemee
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất tế bào gốc phục hồi
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (10ml x 10 Lo)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - EGF, Chiết xuất Hải Sâm
+                  </li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất tế bào gốc nhân sâm Hàn Quốc
+                  </li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất Cam Thảo</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tái tạo và thúc đẩy tăng sinh Collagen và elastin
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Hỗ trợ cải thiện sẹo, thu nhỏ lỗ chân lông
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ngăn ngừa lão hóa da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4: Tế Bào Gốc Mụn GSC TR -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="4"
+            data-price="4060000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tế Bào Gốc Mụn GSC TR"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  4,060,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tế Bào Gốc Mụn GSC TR
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất điều trị mụn chuyên sâu
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (8ml x 10 Lo)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Sulfur: 2.28%</li>
+                  <li class="text-gray-600 text-sm">- Retinol: 0.05%</li>
+                  <li class="text-gray-600 text-sm">
+                    - Salicylic Acid (BHA), Glycolic Acid (AHA)
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống viêm kháng khuẩn, ngăn ngừa mụn mới
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Gom khô nhân mụn nhanh chóng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cung cấp dưỡng chất, tái tạo tế bào da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 5: Tế Bào Gốc Chống Lão Hoá GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="5"
+            data-price="3950000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tế Bào Gốc Chống Lão Hoá GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  3,950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tế Bào Gốc Chống Lão Hoá GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất chống lão hóa cao cấp
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (8ml x 10 Lo)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất Hạt Dẻ</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất Cây Phi</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất tế bào gốc Nho
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống lão hóa và thu nhỏ lỗ chân lông
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da bị tổn thương
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng sinh collagen, tái tạo cấu trúc da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 6: Tế Bào Gốc Trắng Sáng GSC TR -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="6"
+            data-price="4060000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tế Bào Gốc Trắng Sáng GSC TR"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  4,060,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tế Bào Gốc Trắng Sáng GSC TR
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất dưỡng trắng cao cấp
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (8ml x 10 Lo)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất hoa cúc trắng: 4%
+                  </li>
+                  <li class="text-gray-600 text-sm">- Niacinamine: 5%</li>
+                  <li class="text-gray-600 text-sm">
+                    - Tranexamic Acid: 3%, Alpha Arbutin
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Hỗ trợ làm giảm thâm nám, sạm, tàn nhang
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ức chế sản sinh Melanin giúp da trắng sáng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da nhanh chóng, chống sạm tổn thương
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 7: Kem Dưỡng Phục Hồi Thải Độc Da GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="7"
+            data-price="1200000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Dưỡng Phục Hồi Thải Độc Da GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Dưỡng Phục Hồi Thải Độc Da GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Kem dưỡng phục hồi đặc biệt
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Lọ (50g)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất Cúc La Mã</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất Bơ Hạt Mỡ</li>
+                  <li class="text-gray-600 text-sm">
+                    - Ceramide NP, Acetyl Hexapeptide-8
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chuyên phục hồi da mỏng yếu và tổn thương
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giảm viêm, chống dị ứng và làm dịu da tức thì
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi hiệu quả da nhiễm corticoid và nhiễm độc
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 8: Kem Ức Chế Nám GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="8"
+            data-price="500000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Ức Chế Nám GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  500,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Ức Chế Nám GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Kem đặc trị nám chuyên sâu
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Tuýp (15ml/Tuýp)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Alpha Arbutin 5%</li>
+                  <li class="text-gray-600 text-sm">- Niacinamine</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất Bông Cải Xanh, Dầu Tằm Trắng
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Xử lý sắc tố hiệu quả sau 28 ngày
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ức chế và làm mờ sắc tố da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ngăn ngừa tăng sắc tố, dưỡng ẩm
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 9: Mặt Nạ Tái Tạo Và Phục Hồi GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="9"
+            data-price="650000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Mặt Nạ Tái Tạo Và Phục Hồi GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  650,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Mặt Nạ Tái Tạo Và Phục Hồi GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Mặt nạ phục hồi da chuyên sâu
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (10 Miếng/1 Hộp)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất rượu Sake lên men
+                  </li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất Tế bào gốc Sen
+                  </li>
+                  <li class="text-gray-600 text-sm">- PDRN (DNA cá hồi)</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm dịu da tổn thương sau 5 phút
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tái tạo và phục hồi cấu trúc da nhanh chóng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Nuôi dưỡng và làm trắng sáng da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 10: Tế Bào Gốc Sẹo Plus+ -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="10"
+            data-price="2800000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tế Bào Gốc Sẹo Plus+"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  2,800,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tế Bào Gốc Sẹo Plus+
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tinh chất đặc trị sẹo</p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (10ml x 2 Lo)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Niacinamine</li>
+                  <li class="text-gray-600 text-sm">
+                    - Sodium DNA, Glutathione
+                  </li>
+                  <li class="text-gray-600 text-sm">
+                    - Regestril, Galactomoces Ferment Filtrate
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng sinh và tái tạo Collagen, Elastin
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Hỗ trợ cải thiện sẹo lên 80%
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống lão hóa da giúp căng bóng
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 11: Tinh Chất Ngừa Lão Hóa Da -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="11"
+            data-price="2000000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tinh Chất Ngừa Lão Hóa Da"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  2,000,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tinh Chất Ngừa Lão Hóa Da Dr. Leemee
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tinh chất chống lão hóa</p>
+              <p class="text-sm text-gray-600 mb-4">Chai (100ml hoặc 30ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất hành tây</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất rau má</li>
+                  <li class="text-gray-600 text-sm">
+                    - Sodium DNA, Resveratrol, EGF, FGF
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Kích thích các sol đàn hồi và làm dày cấu trúc da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Thúc đẩy phục hồi các tế bào tổn thương
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện sắc tố và làm đồng đều màu da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 12: Kem Ngừa Sẹo Và Trẻ Hóa Da -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="12"
+            data-price="2000000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Ngừa Sẹo Và Trẻ Hóa Da"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  2,000,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Ngừa Sẹo Và Trẻ Hóa Da Dr. Leemee
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem dưỡng đặc trị sẹo</p>
+              <p class="text-sm text-gray-600 mb-4">Tuýp (100ml hoặc 50ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Niacinamine</li>
+                  <li class="text-gray-600 text-sm">- Retinyl Palmitate</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất bơ hạt mỡ, Dầu jojoba, Sodium DNA
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giữ ẩm và làm trắng sáng da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng độ đàn hồi da và cải thiện da thô ráp
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Thúc đẩy quá trình làm lành nhanh vết thương
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 13: Tinh Chất Cấp Nước GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="13"
+            data-price="1200000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tinh Chất Cấp Nước GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tinh Chất Cấp Nước GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất dưỡng ẩm chuyên sâu
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Lọ (50ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Sodium Hyaluronate</li>
+                  <li class="text-gray-600 text-sm">- Panthenol</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất Cám Gạo, Lô Hội, Rau Má
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng cường cân bằng độ ẩm cho làn da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện độ đàn hồi và mịn màng của da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giúp da tươi trẻ, giảm nếp nhăn
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 14: Tinh Chất Trắng Sáng GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="14"
+            data-price="1200000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tinh Chất Trắng Sáng GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tinh Chất Trắng Sáng GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tinh chất dưỡng trắng</p>
+              <p class="text-sm text-gray-600 mb-4">Lọ (50ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Ascorbic Acid</li>
+                  <li class="text-gray-600 text-sm">- Arbutin</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất rễ Dâu Tằm Trắng, Bưởi Chùm
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện sắc tố da hiệu quả
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống oxy hóa, ngừa lão hóa da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Mờ thâm mụn, sáng đều màu da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 15: Tinh Chất Phục Hồi GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="15"
+            data-price="1200000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tinh Chất Phục Hồi GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tinh Chất Phục Hồi GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất phục hồi da chuyên sâu
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Lọ (50ml hoặc 12ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất dầu Jojoba</li>
+                  <li class="text-gray-600 text-sm">- Squalane</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất tế bào gốc Dầu Nanh, Dầu olive
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da nhanh chóng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Nuôi dưỡng làm da khỏe mạnh
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tái tạo hàng rào bảo vệ da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 16: Kem Dưỡng Trắng Speed GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="16"
+            data-price="1200000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Dưỡng Trắng Speed GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Dưỡng Trắng Speed GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Kem dưỡng trắng tốc độ cao
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Hộp (50g/Hộp)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Alpha Arbutin</li>
+                  <li class="text-gray-600 text-sm">- Niacinamide</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất rễ Dâu Tằm Trắng, Cam Thảo
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Dưỡng trắng da chuyên sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm mờ sắc tố da nhanh chóng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giúp da sáng, mịn và đều màu
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 17: Tắm Trắng - Tẩy Da Chết Body GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="17"
+            data-price="1650000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Tắm Trắng - Tẩy Da Chết Body GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,650,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Tắm Trắng - Tẩy Da Chết Body GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tẩy da chết toàn thân</p>
+              <p class="text-sm text-gray-600 mb-4">Chai (500ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất mủ cây Du Đủ
+                  </li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất Cam Thảo, Diếp Cá
+                  </li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất Ma Châu Âu</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Loại bỏ lớp sừng hiệu quả
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ngăn ngừa bít tắc, giúp da thông thoáng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Xử lý mụn lưng và viêm lỗ chân lông
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 18: Kem Ủ Trắng Body GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="18"
+            data-price="1400000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Ủ Trắng Body GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,400,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Ủ Trắng Body GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem ủ trắng toàn thân</p>
+              <p class="text-sm text-gray-600 mb-4">Chai (500ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Alpha Arbutin</li>
+                  <li class="text-gray-600 text-sm">- Hydrolyzed Collagen</li>
+                  <li class="text-gray-600 text-sm">
+                    - Niacinamide, Chiết xuất rễ Dâu Tằm Trắng
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Trắng sáng, bật tông da tức thì
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da sạm sau cháy nắng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cấp ẩm và làm mềm mịn da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 19: Kem Dưỡng Trắng Body GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="19"
+            data-price="1900000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Dưỡng Trắng Body GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,900,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Dưỡng Trắng Body GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Kem dưỡng trắng toàn thân
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Chai (500ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Niacinamide</li>
+                  <li class="text-gray-600 text-sm">
+                    - Titanium Dioxide, Dầu Macca
+                  </li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất Rau Sam, Mầm xôi đen
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giúp da trắng sáng và mịn màng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Trắng bật tone sau 2 tuần
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Bảo vệ da tới ưu trong 24h
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 20: Kem Ủ Trắng Da Mặt GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="20"
+            data-price="2200000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Kem Ủ Trắng Da Mặt GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  2,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Kem Ủ Trắng Da Mặt GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Kem ủ trắng chuyên dụng cho mặt
+              </p>
+              <p class="text-sm text-gray-600 mb-4">Chai (500ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Arbutin</li>
+                  <li class="text-gray-600 text-sm">- Niacinamide</li>
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất Đông Trùng Hạ Thảo, Mâm Xôi Đỏ
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Trắng sáng, bật tông da sau 30 phút
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da sạm sau cháy nắng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Hỗ trợ mờ thâm nám, da không đều màu
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 21: Dầu Tẩy Trang GSC -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+            data-category="21"
+            data-price="700000"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="Dầu Tẩy Trang GSC"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  700,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                Dầu Tẩy Trang GSC
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Dầu tẩy trang dịu nhẹ</p>
+              <p class="text-sm text-gray-600 mb-4">Chai (250ml)</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Dầu hạt Macca</li>
+                  <li class="text-gray-600 text-sm">- Dầu Olive</li>
+                  <li class="text-gray-600 text-sm">
+                    - Dầu hạt Jojoba, Bơ hạt mỡ, Nam Việt Quất
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm sạch sâu lỗ chân lông
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Loại bỏ lớp trang điểm, bụi bẩn, dầu thừa
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Không gây nhờn, bít tắc lỗ chân lông
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VJK ADV DERMA Section -->
+    <section id="vjk-section" class="company-section active">
+      <!-- Company Info -->
+      <div class="container mx-auto px-4 my-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="grid md:grid-cols-3 gap-4 text-center">
+            <div>
+              <h3 class="font-semibold text-gray-700">Địa chỉ</h3>
+              <p class="text-gray-600">
+                186 Thụy Khuê, P. Thụy Khuê, Q. Tây Hồ, TP. Hà Nội
+              </p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-700">Liên hệ</h3>
+              <p class="text-gray-600">Hotline: 0836.524.666</p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-700">Made in Korea</h3>
+              <img
+                src="/public/koreaFlash.png"
+                alt="Korea"
+                class="h-8 mx-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div
+            class="flex flex-col md:flex-row justify-between items-center gap-4"
+          >
+            <div class="w-full md:w-1/3">
+              <input
+                type="text"
+                id="vjk-search"
+                placeholder="Tìm kiếm sản phẩm..."
+                class="w-full px-4 py-2 border rounded-lg search-input"
+              />
+            </div>
+            <div class="w-full md:w-1/3">
+              <select
+                id="vjk-product-select"
+                class="w-full px-4 py-2 border rounded-lg appearance-none"
+              >
+                <option value="all">Tất cả sản phẩm</option>
+                <option value="foam">Sữa rửa mặt</option>
+                <option value="cream">Kem dưỡng</option>
+                <option value="ampoule">Tinh chất</option>
+                <option value="mask">Mặt nạ</option>
+                <option value="sun">Chống nắng</option>
+              </select>
+            </div>
+            <div class="w-full md:w-1/3">
+              <select
+                id="vjk-price-filter"
+                class="w-full px-4 py-2 border rounded-lg appearance-none"
+              >
+                <option value="all">Tất cả giá</option>
+                <option value="0-500000">Dưới 500.000₫</option>
+                <option value="500000-1000000">500.000₫ - 1.000.000₫</option>
+                <option value="1000000+">Trên 1.000.000₫</option>
+              </select>
+            </div>
+            <div class="w-full md:w-auto">
+              <button
+                onclick="downloadExcel('vjk')"
+                class="w-full md:w-auto bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 transition duration-300 flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Tải Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="container mx-auto px-4 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- 1. FOAM CLEANSING -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/public/foam200ml.png"
+                alt="FOAM CLEANSING"
+                class="w-full h-auto object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  450,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                FOAM CLEANSING
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Sữa rửa mặt tạo bọt</p>
+              <p class="text-sm text-gray-600 mb-4">200ml/hộp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất cam gừng</li>
+                  <li class="text-gray-600 text-sm">- Bơ hạt mỡ</li>
+                  <li class="text-gray-600 text-sm">
+                    - Các hoạt chất làm sạch tự nhiên
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm sạch sâu lỗ chân lông
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chiết xuất cam gừng làm sáng màu da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Dưỡng ẩm, làm trắng sáng da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Không gây kích ứng da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. GOMMAGE DOUCEUR -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/public/goammage200ml.png"
+                alt="GOMMAGE DOUCEUR"
+                class="w-full h-auto object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  450,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                GOMMAGE DOUCEUR
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tẩy da chết mặt</p>
+              <p class="text-sm text-gray-600 mb-4">200ml/hộp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">
+                    - Chiết xuất hồng cát cánh
+                  </li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất trà xanh</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất cà chua</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất gạo</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Loại bỏ tế bào chết hiệu quả
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện tone da giúp da trắng sáng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Loại bỏ sần sùi da nhờn
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cung cấp độ ẩm và dưỡng chất
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. SPECIAL PLACENTA TONER -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/public/nuochoahong500ml.png"
+                alt="SPECIAL PLACENTA TONER"
+                class="w-full h-auto object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                SPECIAL PLACENTA TONER
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Nước hoa hồng nhau thai</p>
+              <p class="text-sm text-gray-600 mb-4">500ml/chai</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất nhau thai</li>
+                  <li class="text-gray-600 text-sm">
+                    - Aloe Vera Leaf Extract
+                  </li>
+                  <li class="text-gray-600 text-sm">
+                    - Các dưỡng chất thiết yếu
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cấp bằng độ ẩm cho da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chiết xuất nhau thai giúp căng bóng da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện kết cấu và độ đàn hồi
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. WHITE HYALURONIC CREAM -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="WHITE HYALURONIC CREAM"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  700,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                WHITE HYALURONIC CREAM
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem dưỡng ẩm</p>
+              <p class="text-sm text-gray-600 mb-4">50ml/lọ</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Hyaluronic Acid</li>
+                  <li class="text-gray-600 text-sm">- Vitamin B3, B5</li>
+                  <li class="text-gray-600 text-sm">
+                    - Các dưỡng chất làm trắng
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cung cấp độ ẩm sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Trắng da, căng bóng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Bảo vệ da và kháng oxi hóa
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. AMPOULE REVIVE GP -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="AMPOULE REVIVE GP"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,550,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                AMPOULE REVIVE GP
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất chống lão hóa phục hồi da
+              </p>
+              <p class="text-sm text-gray-600 mb-4">100ml/lọ</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Peptide phức hợp</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất tế bào gốc</li>
+                  <li class="text-gray-600 text-sm">
+                    - Các vitamin và khoáng chất
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi và tái tạo da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống lão hóa mạnh mẽ
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm săn chắc và cải thiện đàn hồi da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. ORANGE MODELING MASK -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="ORANGE MODELING MASK"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                ORANGE MODELING MASK
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Mặt nạ đắp dạng bột</p>
+              <p class="text-sm text-gray-600 mb-4">1000g/gói</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất cam</li>
+                  <li class="text-gray-600 text-sm">- Vitamin C</li>
+                  <li class="text-gray-600 text-sm">- Alginate</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm sáng và đều màu da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cấp ẩm và làm dịu da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Se khít lỗ chân lông
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- 7. PEPPERMINT MODELING MASK -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="PEPPERMINT MODELING MASK"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                PEPPERMINT MODELING MASK
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Mặt nạ bạc hà</p>
+              <p class="text-sm text-gray-600 mb-4">1000g/gói</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất bạc hà</li>
+                  <li class="text-gray-600 text-sm">- Alginate</li>
+                  <li class="text-gray-600 text-sm">- Vitamin E</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm mát và làm dịu da tức thì
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giảm dầu và mụn
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Se khít lỗ chân lông
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. RENEWAL ACTIVE MOISTURE MASK SHEET -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="RENEWAL ACTIVE MOISTURE MASK SHEET"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  700,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                RENEWAL ACTIVE MOISTURE MASK SHEET
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Mặt nạ cấp ẩm</p>
+              <p class="text-sm text-gray-600 mb-4">10 miếng/hộp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Hyaluronic Acid</li>
+                  <li class="text-gray-600 text-sm">- Collagen</li>
+                  <li class="text-gray-600 text-sm">- Vitamin B5</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cung cấp độ ẩm tức thì
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm dịu và phục hồi da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện độ đàn hồi
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. ULTRA WHITE SKIN CAPSULE CREAM -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="ULTRA WHITE SKIN CAPSULE CREAM"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                ULTRA WHITE SKIN CAPSULE CREAM
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem dưỡng trắng da</p>
+              <p class="text-sm text-gray-600 mb-4">50ml/hộp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Niacinamide</li>
+                  <li class="text-gray-600 text-sm">- Alpha Arbutin</li>
+                  <li class="text-gray-600 text-sm">
+                    - Vitamin C dạng viên nang
+                  </li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Dưỡng trắng chuyên sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Giảm thâm nám
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống oxy hóa mạnh mẽ
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10. MELASMA TREATMENTS CREAM -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="MELASMA TREATMENTS CREAM"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                MELASMA TREATMENTS CREAM
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem điều trị nám</p>
+              <p class="text-sm text-gray-600 mb-4">50ml/lọ</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Tranexamic Acid</li>
+                  <li class="text-gray-600 text-sm">- Kojic Acid</li>
+                  <li class="text-gray-600 text-sm">- Vitamin B3</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Điều trị nám chuyên sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm mờ vết thâm
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ngăn ngừa sắc tố melanin
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- 11. MESOTHERAPY DIAMOND WHITE -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="MESOTHERAPY DIAMOND WHITE"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  8,500,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                MESOTHERAPY DIAMOND WHITE
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Tinh chất trắng sáng chuyên sâu
+              </p>
+              <p class="text-sm text-gray-600 mb-4">5ml x 5 lọ/hộp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Glutathione</li>
+                  <li class="text-gray-600 text-sm">- Vitamin C tinh khiết</li>
+                  <li class="text-gray-600 text-sm">- Collagen peptide</li>
+                  <li class="text-gray-600 text-sm">- Tranexamic Acid</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Trắng sáng tức thì chuyên sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Điều trị nám, tàn nhang hiệu quả
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng sinh collagen, cải thiện đàn hồi
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12. ALOE GEL -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="ALOE GEL"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">ALOE GEL</h3>
+              <p class="text-sm text-gray-600 mb-2">Gel lô hội dưỡng da</p>
+              <p class="text-sm text-gray-600 mb-4">500ml/chai</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất lô hội 95%</li>
+                  <li class="text-gray-600 text-sm">- Vitamin E</li>
+                  <li class="text-gray-600 text-sm">- Allantoin</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm dịu da kích ứng
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cấp ẩm và phục hồi da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống viêm và kháng khuẩn
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 13. VITAMIN COLLAGEN MASSAGE CREAM -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="VITAMIN COLLAGEN MASSAGE CREAM"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,200,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                VITAMIN COLLAGEN MASSAGE CREAM
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem massage collagen</p>
+              <p class="text-sm text-gray-600 mb-4">1000ml/hộp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Hydrolyzed Collagen</li>
+                  <li class="text-gray-600 text-sm">- Vitamin A, C, E</li>
+                  <li class="text-gray-600 text-sm">- Dầu jojoba</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Massage thư giãn chuyên sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Nuôi dưỡng và tái tạo da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện đàn hồi và săn chắc
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 14. MAKE UP POINT WATER -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="MAKE UP POINT WATER"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                MAKE UP POINT WATER
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Nước tẩy trang</p>
+              <p class="text-sm text-gray-600 mb-4">500ml/chai</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Micellar Water</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất hoa cúc</li>
+                  <li class="text-gray-600 text-sm">- Vitamin B5</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tẩy trang sạch sâu
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Không gây khô da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    An toàn cho mọi loại da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- 15. AMPOULE GOLD24K ACTIVE -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="AMPOULE GOLD24K ACTIVE"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,550,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                AMPOULE GOLD24K ACTIVE
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tinh chất vàng 24K</p>
+              <p class="text-sm text-gray-600 mb-4">100ml/lọ</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Vàng nguyên chất 24K</li>
+                  <li class="text-gray-600 text-sm">- EGF</li>
+                  <li class="text-gray-600 text-sm">- Peptide phức hợp</li>
+                  <li class="text-gray-600 text-sm">- Collagen</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm trắng sáng da, điều trị nám tàn nhang
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Cải thiện nếp nhăn, chống lão hóa
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng cường độ đàn hồi, căng bóng
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 16. SUNCREAM SPF 50+++ -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="SUNCREAM SPF 50+++"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  450,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                SUNCREAM SPF 50+++
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Kem chống nắng</p>
+              <p class="text-sm text-gray-600 mb-4">50ml/tuýp</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Titanium Dioxide</li>
+                  <li class="text-gray-600 text-sm">- Zinc Oxide</li>
+                  <li class="text-gray-600 text-sm">- Vitamin E</li>
+                  <li class="text-gray-600 text-sm">- Hyaluronic Acid</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống nắng phổ rộng SPF 50+++
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Không gây bết dính, phù hợp makeup
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống thấm nước, bảo vệ lâu dài
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 17. ALOE GEL PLUS -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="ALOE GEL PLUS"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  950,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                ALOE GEL PLUS
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Gel lô hội cao cấp</p>
+              <p class="text-sm text-gray-600 mb-4">500ml/chai</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Aloe Vera 99%</li>
+                  <li class="text-gray-600 text-sm">- Vitamin C, E</li>
+                  <li class="text-gray-600 text-sm">- Collagen thủy phân</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Dưỡng ẩm và làm dịu da tức thì
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Phục hồi da cháy nắng, tổn thương
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tăng cường đàn hồi và săn chắc
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 18. PLACENTA AMPOULE -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="PLACENTA AMPOULE"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  1,450,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                PLACENTA AMPOULE
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Tinh chất nhau thai</p>
+              <p class="text-sm text-gray-600 mb-4">50ml/lọ</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Chiết xuất nhau thai</li>
+                  <li class="text-gray-600 text-sm">- EGF</li>
+                  <li class="text-gray-600 text-sm">- Peptide</li>
+                  <li class="text-gray-600 text-sm">- Vitamin complex</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Tái tạo và phục hồi da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm sáng và đều màu da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Chống lão hóa hiệu quả
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 19. MAKE UP REMOVER -->
+          <div
+            class="bg-white rounded-lg shadow-lg overflow-hidden product-card"
+          >
+            <div class="relative">
+              <img
+                src="/api/placeholder/400/300"
+                alt="MAKE UP REMOVER"
+                class="w-full h-48 object-cover"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  850,000₫
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                MAKE UP REMOVER
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">Nước tẩy trang cao cấp</p>
+              <p class="text-sm text-gray-600 mb-4">500ml/chai</p>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  Thành phần chính:
+                </h4>
+                <ul class="space-y-2 mb-4">
+                  <li class="text-gray-600 text-sm">- Micellar Water</li>
+                  <li class="text-gray-600 text-sm">- Chiết xuất lô hội</li>
+                  <li class="text-gray-600 text-sm">- Vitamin E</li>
+                  <li class="text-gray-600 text-sm">- Dầu dưỡng thiên nhiên</li>
+                </ul>
+                <h4 class="font-semibold text-gray-700 mb-2">Công dụng:</h4>
+                <ul class="space-y-2">
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Làm sạch sâu lớp trang điểm
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Không gây khô da
+                  </li>
+                  <li class="flex items-start text-gray-600 text-sm">
+                    <svg
+                      class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Dưỡng ẩm và bảo vệ da
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+      // Company Switcher
+      function switchCompany(company) {
+        // Update tabs
+        document
+          .getElementById("vinako-tab")
+          .classList.toggle("tab-active", company === "vinako");
+        document
+          .getElementById("vjk-tab")
+          .classList.toggle("tab-active", company === "vjk");
+
+        // Update sections
+        document
+          .getElementById("vinako-section")
+          .classList.toggle("active", company === "vinako");
+        document
+          .getElementById("vjk-section")
+          .classList.toggle("active", company === "vjk");
+
+        // Update theme colors
+        document.documentElement.style.setProperty(
+          "--primary-color",
+          company === "vinako" ? "var(--vinako-primary)" : "var(--vjk-primary)"
+        );
+
+        // Reset filters
+        resetFilters(company);
+      }
+
+      // Reset Filters
+      function resetFilters(company) {
+        const section = document.getElementById(`${company}-section`);
+        if (section) {
+          const searchInput = section.querySelector(`#${company}-search`);
+          const productSelect = section.querySelector(
+            `#${company}-product-select`
+          );
+          const priceFilter = section.querySelector(`#${company}-price-filter`);
+
+          if (searchInput) searchInput.value = "";
+          if (productSelect) productSelect.value = "all";
+          if (priceFilter) priceFilter.value = "all";
+
+          filterProducts(company);
+        }
+      }
+
+      // Filter Products
+      function filterProducts(company) {
+        const section = document.getElementById(`${company}-section`);
+        const searchTerm = section
+          .querySelector(`#${company}-search`)
+          .value.toLowerCase();
+        const selectedProduct = section.querySelector(
+          `#${company}-product-select`
+        ).value;
+        const priceRange = section.querySelector(
+          `#${company}-price-filter`
+        ).value;
+        const products = section.querySelectorAll(".product-card");
+
+        products.forEach((product) => {
+          const title = product.querySelector("h3").textContent.toLowerCase();
+          const description = product
+            .querySelector("p")
+            .textContent.toLowerCase();
+          const priceText = product.querySelector(
+            `.${company === "vinako" ? "bg-blue-600" : "bg-purple-700"}`
+          ).textContent;
+          const price = parseInt(priceText.replace(/[^\d]/g, ""));
+
+          let showProduct = true;
+
+          // Search filter
+          if (
+            searchTerm &&
+            !title.includes(searchTerm) &&
+            !description.includes(searchTerm)
+          ) {
+            showProduct = false;
+          }
+
+          // Product type filter
+          if (selectedProduct !== "all") {
+            if (company === "vinako") {
+              // Vinako uses category data attributes
+              if (product.dataset.category !== selectedProduct) {
+                showProduct = false;
+              }
+            } else {
+              // VJK uses product type keywords
+              const productTypes = {
+                foam: ["foam cleansing", "sữa rửa mặt"],
+                cream: ["cream", "kem"],
+                ampoule: ["ampoule", "tinh chất"],
+                mask: ["mask", "mặt nạ"],
+                sun: ["sun", "chống nắng"],
+              };
+
+              const matchesType = productTypes[selectedProduct].some(
+                (type) =>
+                  title.toLowerCase().includes(type) ||
+                  description.toLowerCase().includes(type)
+              );
+
+              if (!matchesType) showProduct = false;
+            }
+          }
+
+          // Price filter
+          if (priceRange !== "all") {
+            const [min, max] = priceRange.split("-").map(Number);
+            if (max && (price < min || price > max)) {
+              showProduct = false;
+            } else if (!max && price < min) {
+              showProduct = false;
+            }
+          }
+
+          // Apply visibility
+          product.style.display = showProduct ? "block" : "none";
+          if (showProduct) {
+            product.classList.add("animate-fade-in");
+          } else {
+            product.classList.remove("animate-fade-in");
+          }
+        });
+      }
+
+      // Download Excel
+      function downloadExcel(company) {
+        const section = document.getElementById(`${company}-section`);
+        const data = [
+          [
+            "STT",
+            "Sản phẩm",
+            "Quy cách",
+            "Thành phần chính",
+            "Công dụng",
+            "Giá niêm yết",
+          ],
+        ];
+
+        section.querySelectorAll(".product-card").forEach((product, index) => {
+          const title = product.querySelector("h3").textContent;
+          const volume = product.querySelector("p:nth-child(3)").textContent;
+
+          // Get ingredients
+          const ingredientsList = product.querySelectorAll(
+            ".text-gray-600.text-sm"
+          );
+          const ingredients = Array.from(ingredientsList)
+            .filter((el) => el.textContent.startsWith("- "))
+            .slice(0, 3)
+            .map((el) => el.textContent.replace("- ", ""))
+            .join(", ");
+
+          // Get benefits
+          const benefitsList = product.querySelectorAll(
+            ".flex.items-start.text-gray-600.text-sm"
+          );
+          const benefits = Array.from(benefitsList)
+            .map((el) => el.textContent.trim())
+            .join(", ");
+
+          // Get price
+          const priceElement = product.querySelector(
+            `.${company === "vinako" ? "bg-blue-600" : "bg-purple-700"}`
+          );
+          const price = priceElement.textContent;
+
+          data.push([index + 1, title, volume, ingredients, benefits, price]);
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+
+        // Set column widths
+        ws["!cols"] = [
+          { wch: 5 }, // STT
+          { wch: 30 }, // Sản phẩm
+          { wch: 15 }, // Quy cách
+          { wch: 40 }, // Thành phần
+          { wch: 50 }, // Công dụng
+          { wch: 15 }, // Giá
+        ];
+
+        // Set header style
+        const headerRange = XLSX.utils.decode_range(ws["!ref"]);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const address = XLSX.utils.encode_cell({ r: 0, c: C });
+          ws[address].s = {
+            font: { bold: true },
+            alignment: { horizontal: "center" },
+          };
+        }
+
+        XLSX.utils.book_append_sheet(wb, ws, "Bảng giá");
+        XLSX.writeFile(wb, `Bang_Gia_${company.toUpperCase()}.xlsx`);
+      }
+
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const mobileMenu = document.getElementById("mobileMenu");
+        mobileMenu.classList.toggle("active");
+      }
+
+      // Event Listeners
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add event listeners for both companies
+        ["vinako", "vjk"].forEach((company) => {
+          const section = document.getElementById(`${company}-section`);
+          if (section) {
+            // Search input
+            const searchInput = section.querySelector(`#${company}-search`);
+            if (searchInput) {
+              searchInput.addEventListener("input", () =>
+                filterProducts(company)
+              );
+            }
+
+            // Product select
+            const productSelect = section.querySelector(
+              `#${company}-product-select`
+            );
+            if (productSelect) {
+              productSelect.addEventListener("change", () =>
+                filterProducts(company)
+              );
+            }
+
+            // Price filter
+            const priceFilter = section.querySelector(
+              `#${company}-price-filter`
+            );
+            if (priceFilter) {
+              priceFilter.addEventListener("change", () =>
+                filterProducts(company)
+              );
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
