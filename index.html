@@ -5933,12 +5933,14 @@
             const priceText = product.querySelector(
               `.${company === "vinako" ? "bg-blue-600" : "bg-purple-700"}`
             ).textContent;
-            const price = parseInt(priceText.replace(/[^\d]/g, ""));
+            const price = parseInt(priceText.replace(/[^0-9]/g, ""));
             const [min, max] = priceRange.split("-").map(Number);
 
-            if (max && (price < min || price > max)) {
-              showProduct = false;
-            } else if (!max && price < min) {
+            if (priceRange === "1000000+") {
+              if (price <= 1000000) {
+                showProduct = false;
+              }
+            } else if (price < min || price > max) {
               showProduct = false;
             }
           }
@@ -5988,11 +5990,9 @@
         ];
 
         const section = document.getElementById(`${company}-section`);
-        const visibleProducts = Array.from(
-          section.querySelectorAll(".product-card")
-        ).filter((product) => product.style.display !== "none");
+        const products = section.querySelectorAll(".product-card");
 
-        visibleProducts.forEach((product, index) => {
+        products.forEach((product, index) => {
           const title = product.querySelector("h3").textContent;
           const volume = product.querySelector("p:nth-child(3)").textContent;
 
