@@ -5765,6 +5765,7 @@
         </div>
       </div>
     </section>
+    <button id="scrollTopBtn" class="scroll-top-btn">↑</button>
 
     <script>
       // Toggle Mobile Menu
@@ -5847,7 +5848,6 @@
           size: ["to)", "cá nhân"],
         };
 
-        // Kiểm tra xem tiêu đề hoặc mô tả có chứa từ khóa nào trong nhóm sản phẩm không
         return productTypes[type].some(
           (keyword) => title.includes(keyword) || description.includes(keyword)
         );
@@ -5905,7 +5905,6 @@
         products.forEach((product) => {
           let showProduct = true;
 
-          // Product type filter
           if (selectedProduct !== "all") {
             if (company === "vinako") {
               showProduct = checkVinakoProductType(product, selectedProduct);
@@ -5914,7 +5913,6 @@
             }
           }
 
-          // Search filter
           if (showProduct && searchTerm) {
             const title = product.querySelector("h3").textContent.toLowerCase();
             const description = product
@@ -5928,7 +5926,6 @@
             }
           }
 
-          // Price filter
           if (showProduct && priceRange !== "all") {
             const priceText = product.querySelector(
               `.${company === "vinako" ? "bg-blue-600" : "bg-purple-700"}`
@@ -5945,7 +5942,6 @@
             }
           }
 
-          // Apply visibility with animation
           product.style.display = showProduct ? "block" : "none";
           if (showProduct) {
             product.classList.add("animate-fade-in");
@@ -5964,9 +5960,7 @@
         const searchInput = document.getElementById(`${company}-search`);
         const priceFilter = document.getElementById(`${company}-price-filter`);
 
-        // When a specific product type is selected
         if (productSelect.value !== "all") {
-          // Maintain search and price filters active
           searchInput.disabled = false;
           priceFilter.disabled = false;
           searchInput.classList.remove("bg-gray-100", "cursor-not-allowed");
@@ -5978,6 +5972,19 @@
 
       // Excel Download Function
       function downloadExcel(company) {
+        const section = document.getElementById(`${company}-section`);
+        const productSelect = section.querySelector(
+          `#${company}-product-select`
+        );
+        const priceFilter = section.querySelector(`#${company}-price-filter`);
+
+        const previousProductValue = productSelect.value;
+        const previousPriceValue = priceFilter.value;
+
+        productSelect.value = "all";
+        priceFilter.value = "all";
+        filterProducts(company);
+
         const data = [
           [
             "STT",
@@ -5989,67 +5996,53 @@
           ],
         ];
 
-        // Lấy tất cả sản phẩm từ section tương ứng
-        const section = document.getElementById(`${company}-section`);
         const products = section.querySelectorAll(".product-card");
         let index = 1;
 
         products.forEach((product) => {
-          // Chỉ xử lý sản phẩm đang hiển thị
-          if (product.style.display !== "none") {
-            // Lấy tên sản phẩm
-            const title = product.querySelector("h3").textContent.trim();
+          const title = product.querySelector("h3").textContent.trim();
 
-            // Lấy quy cách (dòng thứ 3 trong thẻ p)
-            const volumeElements = product.querySelectorAll("p");
-            const volume = volumeElements[1]?.textContent.trim() || "";
+          const volumeElements = product.querySelectorAll("p");
+          const volume = volumeElements[1]?.textContent.trim() || "";
 
-            // Lấy thành phần chính (3 thành phần đầu tiên)
-            const ingredients = Array.from(
-              product.querySelectorAll(
-                ".bg-gray-50 ul:first-of-type li.text-gray-600.text-sm"
-              )
+          const ingredients = Array.from(
+            product.querySelectorAll(
+              ".bg-gray-50 ul:first-of-type li.text-gray-600.text-sm"
             )
-              .slice(0, 3)
-              .map((li) => li.textContent.replace("- ", "").trim())
-              .join(", ");
+          )
+            .slice(0, 3)
+            .map((li) => li.textContent.replace("- ", "").trim())
+            .join(", ");
 
-            // Lấy công dụng
-            const benefits = Array.from(
-              product.querySelectorAll(
-                ".bg-gray-50 ul:last-of-type li.flex.items-start"
-              )
+          const benefits = Array.from(
+            product.querySelectorAll(
+              ".bg-gray-50 ul:last-of-type li.flex.items-start"
             )
-              .map((li) => li.textContent.trim())
-              .join(", ");
+          )
+            .map((li) => li.textContent.trim())
+            .join(", ");
 
-            // Lấy giá
-            const priceElement = product.querySelector(
-              company === "vinako" ? ".bg-blue-600" : ".bg-purple-700"
-            );
-            const price = priceElement?.textContent.trim() || "";
+          const priceElement = product.querySelector(
+            company === "vinako" ? ".bg-blue-600" : ".bg-purple-700"
+          );
+          const price = priceElement?.textContent.trim() || "";
 
-            // Thêm vào data
-            data.push([index, title, volume, ingredients, benefits, price]);
-            index++;
-          }
+          data.push([index, title, volume, ingredients, benefits, price]);
+          index++;
         });
 
-        // Tạo workbook và worksheet
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(data);
 
-        // Đặt độ rộng cột
         ws["!cols"] = [
-          { wch: 5 }, // STT
-          { wch: 30 }, // Sản phẩm
-          { wch: 15 }, // Quy cách
-          { wch: 40 }, // Thành phần
-          { wch: 50 }, // Công dụng
-          { wch: 15 }, // Giá
+          { wch: 5 },
+          { wch: 30 },
+          { wch: 15 },
+          { wch: 40 },
+          { wch: 50 },
+          { wch: 15 },
         ];
 
-        // Style cho header
         const range = XLSX.utils.decode_range(ws["!ref"]);
         for (let C = range.s.c; C <= range.e.c; ++C) {
           const address = XLSX.utils.encode_cell({ r: 0, c: C });
@@ -6060,7 +6053,6 @@
           };
         }
 
-        // Thêm worksheet vào workbook và lưu file
         XLSX.utils.book_append_sheet(wb, ws, "Bảng giá");
 
         try {
@@ -6070,68 +6062,204 @@
           );
         } catch (error) {
           console.error("Lỗi khi tạo file Excel:", error);
+        } finally {
+          productSelect.value = previousProductValue;
+          priceFilter.value = previousPriceValue;
+          filterProducts(company);
         }
-      } // Event Listeners
-      document.addEventListener("DOMContentLoaded", function () {
-        ["vinako", "vjk"].forEach((company) => {
-          const section = document.getElementById(`${company}-section`);
-          if (section) {
-            // Product select
-            const productSelect = section.querySelector(
-              `#${company}-product-select`
-            );
-            if (productSelect) {
-              productSelect.addEventListener("change", () =>
-                handleFilterChange(company)
-              );
-            }
+      }
 
-            // Search input
-            const searchInput = section.querySelector(`#${company}-search`);
-            if (searchInput) {
-              searchInput.addEventListener("input", () => {
-                if (!searchInput.disabled) {
-                  filterProducts(company);
-                }
-              });
-            }
+      // Image Preloader Class
+      class ImagePreloader {
+        constructor() {
+          this.imageUrls = [
+            "/public/vajakologo.png",
+            "/public/vinakologo.png",
+            "/public/koreaFlash.png",
+            "/public/foam200ml.png",
+            "/public/goammage200ml.png",
+            "/public/nuochoahong250ml.png",
+            "/public/WHITEHYALURONICCREAM.png",
+            "/public/AmpouleReviveC.P.png",
+            "/public/Orangemask.png",
+            "/public/Peppermintmask.png",
+            "/public/RENEWALmask.png",
+            "/public/UltraWhite.png",
+            "/public/gold24.png",
+            "/public/suncream.png",
+            "/public/alohoi.png",
+            "/public/VitaminCollagenMassage.png",
+            "/public/makeup500ml.png",
+            "/public/foam500ml.png",
+            "/public/nuochoahong500ml.png",
+            "/public/goammage500ml.png",
+            "/public/MesotherapyDiamondWhite.png",
+          ];
 
-            // Price filter
-            const priceFilter = section.querySelector(
-              `#${company}-price-filter`
+          this.loadedImages = 0;
+          this.totalImages = this.imageUrls.length;
+        }
+
+        async preloadImages() {
+          try {
+            this.showLoadingOverlay();
+            const imagePromises = this.imageUrls.map((url) =>
+              this.loadImage(url)
             );
-            if (priceFilter) {
-              priceFilter.addEventListener("change", () => {
-                if (!priceFilter.disabled) {
-                  filterProducts(company);
-                }
-              });
-            }
+            await Promise.all(imagePromises);
+            this.hideLoadingOverlay();
+            this.initializeComponents();
+          } catch (error) {
+            console.error("Error preloading images:", error);
+            this.hideLoadingOverlay();
           }
-        });
-      });
-    </script>
-
-    <button id="scrollTopBtn" class="scroll-top-btn">↑</button>
-    <script>
-      window.addEventListener("scroll", function () {
-        var scrollTopBtn = document.getElementById("scrollTopBtn");
-        if (
-          document.body.scrollTop > 20 ||
-          document.documentElement.scrollTop > 20
-        ) {
-          scrollTopBtn.classList.add("show");
-        } else {
-          scrollTopBtn.classList.remove("show");
         }
-      });
 
-      document
-        .getElementById("scrollTopBtn")
-        .addEventListener("click", function () {
-          document.body.scrollTop = 0;
-          document.documentElement.scrollTop = 0;
-        });
+        loadImage(url) {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+
+            img.onload = () => {
+              this.loadedImages++;
+              this.updateLoadingProgress();
+              resolve(img);
+            };
+
+            img.onerror = () => {
+              console.warn(`Failed to load image: ${url}`);
+              this.loadedImages++;
+              this.updateLoadingProgress();
+              resolve();
+            };
+
+            img.src = url;
+          });
+        }
+
+        showLoadingOverlay() {
+          const overlay = document.createElement("div");
+          overlay.id = "loadingOverlay";
+          overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    `;
+
+          const spinner = document.createElement("div");
+          spinner.style.cssText = `
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    `;
+
+          const progressText = document.createElement("div");
+          progressText.id = "loadingProgress";
+          progressText.textContent = "Đang tải ảnh... 0%";
+
+          const style = document.createElement("style");
+          style.textContent =
+            "@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }";
+
+          document.head.appendChild(style);
+          overlay.appendChild(spinner);
+          overlay.appendChild(progressText);
+          document.body.appendChild(overlay);
+        }
+
+        hideLoadingOverlay() {
+          const overlay = document.getElementById("loadingOverlay");
+          if (overlay) {
+            overlay.style.opacity = "0";
+            overlay.style.transition = "opacity 0.5s ease";
+            setTimeout(() => overlay.remove(), 500);
+          }
+        }
+
+        updateLoadingProgress() {
+          const progress = Math.round(
+            (this.loadedImages / this.totalImages) * 100
+          );
+          const progressElement = document.getElementById("loadingProgress");
+          if (progressElement) {
+            progressElement.textContent = `Đang tải ảnh... ${progress}%`;
+          }
+        }
+
+        initializeComponents() {
+          // Initialize scroll button
+          window.addEventListener("scroll", function () {
+            var scrollTopBtn = document.getElementById("scrollTopBtn");
+            if (
+              document.body.scrollTop > 20 ||
+              document.documentElement.scrollTop > 20
+            ) {
+              scrollTopBtn.classList.add("show");
+            } else {
+              scrollTopBtn.classList.remove("show");
+            }
+          });
+
+          document
+            .getElementById("scrollTopBtn")
+            .addEventListener("click", function () {
+              document.body.scrollTop = 0;
+              document.documentElement.scrollTop = 0;
+            });
+
+          // Initialize filters for each company section
+          ["vinako", "vjk"].forEach((company) => {
+            const section = document.getElementById(`${company}-section`);
+            if (section) {
+              const productSelect = section.querySelector(
+                `#${company}-product-select`
+              );
+              if (productSelect) {
+                productSelect.addEventListener("change", () =>
+                  handleFilterChange(company)
+                );
+              }
+
+              const searchInput = section.querySelector(`#${company}-search`);
+              if (searchInput) {
+                searchInput.addEventListener("input", () => {
+                  if (!searchInput.disabled) {
+                    filterProducts(company);
+                  }
+                });
+              }
+
+              const priceFilter = section.querySelector(
+                `#${company}-price-filter`
+              );
+              if (priceFilter) {
+                priceFilter.addEventListener("change", () => {
+                  if (!priceFilter.disabled) {
+                    filterProducts(company);
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+
+      // Start preloading when DOM is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        const imagePreloader = new ImagePreloader();
+        imagePreloader.preloadImages();
+      });
     </script>
   </body>
 </html>
