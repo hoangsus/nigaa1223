@@ -154,7 +154,7 @@
     </div>
 
     <!-- Spacer for fixed header -->
-    <div class="h-24"></div>
+    <div class="h-40"></div>
 
     <!-- VINAKO Section -->
     <section id="vinako-section" class="company-section">
@@ -5989,41 +5989,57 @@
           ],
         ];
 
+        // Lấy tất cả sản phẩm từ section tương ứng
         const section = document.getElementById(`${company}-section`);
         const products = section.querySelectorAll(".product-card");
+        let index = 1;
 
-        products.forEach((product, index) => {
-          const title = product.querySelector("h3").textContent;
-          const volume = product.querySelector("p:nth-child(3)").textContent;
+        products.forEach((product) => {
+          // Chỉ xử lý sản phẩm đang hiển thị
+          if (product.style.display !== "none") {
+            // Lấy tên sản phẩm
+            const title = product.querySelector("h3").textContent.trim();
 
-          const ingredientsList = product.querySelectorAll(
-            ".text-gray-600.text-sm"
-          );
-          const ingredients = Array.from(ingredientsList)
-            .filter((el) => el.textContent.startsWith("- "))
-            .slice(0, 3)
-            .map((el) => el.textContent.replace("- ", ""))
-            .join(", ");
+            // Lấy quy cách (dòng thứ 3 trong thẻ p)
+            const volumeElements = product.querySelectorAll("p");
+            const volume = volumeElements[1]?.textContent.trim() || "";
 
-          const benefitsList = product.querySelectorAll(
-            ".flex.items-start.text-gray-600.text-sm"
-          );
-          const benefits = Array.from(benefitsList)
-            .map((el) => el.textContent.trim())
-            .join(", ");
+            // Lấy thành phần chính (3 thành phần đầu tiên)
+            const ingredients = Array.from(
+              product.querySelectorAll(
+                ".bg-gray-50 ul:first-of-type li.text-gray-600.text-sm"
+              )
+            )
+              .slice(0, 3)
+              .map((li) => li.textContent.replace("- ", "").trim())
+              .join(", ");
 
-          const priceElement = product.querySelector(
-            `.${company === "vinako" ? "bg-blue-600" : "bg-purple-700"}`
-          );
-          const price = priceElement.textContent;
+            // Lấy công dụng
+            const benefits = Array.from(
+              product.querySelectorAll(
+                ".bg-gray-50 ul:last-of-type li.flex.items-start"
+              )
+            )
+              .map((li) => li.textContent.trim())
+              .join(", ");
 
-          data.push([index + 1, title, volume, ingredients, benefits, price]);
+            // Lấy giá
+            const priceElement = product.querySelector(
+              company === "vinako" ? ".bg-blue-600" : ".bg-purple-700"
+            );
+            const price = priceElement?.textContent.trim() || "";
+
+            // Thêm vào data
+            data.push([index, title, volume, ingredients, benefits, price]);
+            index++;
+          }
         });
 
+        // Tạo workbook và worksheet
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(data);
 
-        // Set column widths
+        // Đặt độ rộng cột
         ws["!cols"] = [
           { wch: 5 }, // STT
           { wch: 30 }, // Sản phẩm
@@ -6033,26 +6049,29 @@
           { wch: 15 }, // Giá
         ];
 
-        // Set header style
-        const headerRange = XLSX.utils.decode_range(ws["!ref"]);
-        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+        // Style cho header
+        const range = XLSX.utils.decode_range(ws["!ref"]);
+        for (let C = range.s.c; C <= range.e.c; ++C) {
           const address = XLSX.utils.encode_cell({ r: 0, c: C });
-          if (ws[address]) {
-            ws[address].s = {
-              font: { bold: true },
-              alignment: { horizontal: "center" },
-            };
-          }
+          if (!ws[address]) continue;
+          ws[address].s = {
+            font: { bold: true },
+            alignment: { horizontal: "center" },
+          };
         }
 
+        // Thêm worksheet vào workbook và lưu file
         XLSX.utils.book_append_sheet(wb, ws, "Bảng giá");
-        XLSX.writeFile(
-          wb,
-          `Bang_Gia_${company.toUpperCase()}_${Date.now()}.xlsx`
-        );
-      }
 
-      // Event Listeners
+        try {
+          XLSX.writeFile(
+            wb,
+            `Bang_Gia_${company.toUpperCase()}_${Date.now()}.xlsx`
+          );
+        } catch (error) {
+          console.error("Lỗi khi tạo file Excel:", error);
+        }
+      } // Event Listeners
       document.addEventListener("DOMContentLoaded", function () {
         ["vinako", "vjk"].forEach((company) => {
           const section = document.getElementById(`${company}-section`);
